@@ -1,4 +1,5 @@
 __pycache__/
 *.pyc
+dataset/
 tensorboard/
 workspace.code-workspace
