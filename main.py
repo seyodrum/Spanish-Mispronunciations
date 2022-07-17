@@ -120,10 +120,14 @@ def executeProcess(conf):
 
     if conf['tensorboard']['enable']:
         model_callbacks.append(
-            keras.callbacks.TensorBoard(log_dir=conf['logDir'], histogram_freq=conf['tensorboard']['histogram_freq'])
+            keras.callbacks.TensorBoard(
+                log_dir=conf['logDir'],
+                histogram_freq=conf['tensorboard']['histogram_freq'],
+                profile_batch=conf['tensorboard']['profile_batch'],
+            )
         )
 
-    model.fit(
+    train_history = model.fit(
         preprocessing.train,
         validation_data=preprocessing.test,
         steps_per_epoch=preprocessing.steps_per_epoch,
@@ -133,6 +137,7 @@ def executeProcess(conf):
     )
 
     #   Model Evaluation (Summary, Metrics, Confusion Matrix)
+    metrics.plot_train_history(train_history.history, conf)
     model_path = os.path.join(os.path.dirname(conf['logDir']), 'model')
 
     if not os.path.exists(model_path):

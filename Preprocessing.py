@@ -52,6 +52,7 @@ class Preprocessing(object):
             axes[0].plot(timescale, audio)
             axes[0].set_title('Waveform')
             axes[0].set_xlim([0, audio.shape[0]])
+            axes[0].set_ylabel('Amplitude')
             axes[0].grid()
             self.plot_spectrogram(spectrogram, axes[1])
             axes[1].set_title('Spectrogram')
@@ -112,6 +113,7 @@ class Preprocessing(object):
             axes[0].plot(timescale, audio)
             axes[0].set_title('Waveform')
             axes[0].set_xlim([0, audio.shape[0]])
+            axes[0].set_ylabel('Amplitude')
             axes[0].grid()
             self.plot_spectrogram(spectrogram, axes[1])
             axes[1].set_title('Spectrogram')
@@ -172,6 +174,7 @@ class Preprocessing(object):
             axes[0].plot(timescale, audio)
             axes[0].set_title('Waveform')
             axes[0].set_xlim([0, audio.shape[0]])
+            axes[0].set_ylabel('Amplitude')
             axes[0].grid()
             self.plot_spectrogram(spectrogram, axes[1])
             axes[1].set_title('Spectrogram')
@@ -342,6 +345,8 @@ class Preprocessing(object):
         X = np.linspace(0, np.size(spectrogram), num=width, dtype=int)
         Y = range(height)
         ax.pcolormesh(X, Y, log_spec)
+        ax.set_xlabel('Sample')
+        ax.set_ylabel('Coefficient')
 
     @staticmethod
     def reduce_data_dimension(data, label):
