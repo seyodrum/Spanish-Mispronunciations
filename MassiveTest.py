@@ -9,6 +9,22 @@ import main as Main
 import sys
 
 #   Functions
+def get_average_time_per_experiment(start, end, number_experiments):
+    start = datetime.strptime(start, '%Y%m%d-%H%M%S')
+    end = datetime.strptime(end, '%Y%m%d-%H%M%S')
+    delta = end - start
+    seconds = delta.total_seconds() / number_experiments
+    print('total seconds', seconds)
+    seconds = seconds % (24 * 3600)
+    hour = seconds // 3600
+    seconds %= 3600
+    minutes = seconds // 60
+    seconds %= 60
+    total = "%d:%02d:%02d" % (hour, minutes, seconds)
+    print('total', total)
+    return
+
+
 def massive_test(experiment):
     conf = {
         'dataAugmentation': {'enable': experiment['enable_dataAugmentation'], 'labels': []},
@@ -32,6 +48,7 @@ def massive_test(experiment):
         'tensorboard': {
             'enable': experiment['enable_tensorboard'],
             'histogram_freq': experiment['tensorboard_histogram_freq'],
+            'profile_batch': experiment['tensorboard_profile_batch'],
         },
     }
 
@@ -39,9 +56,10 @@ def massive_test(experiment):
         conf['plotProcess'] = True
 
     sys.stdout = open('log.txt', 'x')
+    start = datetime.now().strftime("%Y%m%d-%H%M%S")
     print(
         '############################    START:',
-        datetime.now().strftime("%Y%m%d-%H%M%S"),
+        start,
         '   ############################',
     )
     print(conf, '\n\n')
@@ -61,11 +79,13 @@ def massive_test(experiment):
             Main.executeProcess(conf)
             print('\n\n\n')
 
+    end = datetime.now().strftime("%Y%m%d-%H%M%S")
     print(
         '############################    END:',
-        datetime.now().strftime("%Y%m%d-%H%M%S"),
+        end,
         '   ############################',
     )
+    get_average_time_per_experiment(start, end, experiment['number_repetitions'] * experiment['number_subdatasets'])
     sys.stdout.close()
     os.rename('log.txt', os.path.join(experiment['logDir'], 'log.txt'))
     plot_boxplot(experiment)
@@ -129,6 +149,7 @@ if __name__ == '__main__':
         'plotProcess': False,
         'random_ints': 'rints_tags3',
         'tensorboard_histogram_freq': 1000,
+        'tensorboard_profile_batch': '700, 1000',
         'transformation': 'stft',
         'type': 'resize',
     }

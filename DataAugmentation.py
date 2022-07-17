@@ -5,12 +5,12 @@ import matplotlib.pyplot as plt
 
 #   Classes
 class DataAugmentation(object):
-    def __init__(self, train_dataset, signal_noise_rate=10, shift_units=4800, plotProcess=True, labels={}):
+    def __init__(self, train_dataset, signal_noise_rate=10, shift_samples=4800, plotProcess=True, labels={}):
         self.augmented = 0
         self.noise = tf.data.Dataset
         self.roll = tf.data.Dataset
         self.signal_noise_rate = signal_noise_rate
-        self.shift_units = shift_units
+        self.shift_samples = shift_samples
         self.init_data_augmentation(train_dataset, plotProcess, labels)
 
     # Main functions
@@ -45,31 +45,35 @@ class DataAugmentation(object):
         axes[0].plot(timescale, audio)
         axes[0].set_title('Waveform: ' + label)
         axes[0].set_xlim([0, audio.shape[0]])
+        axes[0].xaxis.set_ticklabels([])
         axes[0].grid()
 
         audio = list(self.noise.as_numpy_iterator())[0][0]
         axes[1].plot(timescale, audio)
         axes[1].set_title('White Noise: SNR = ' + str(self.signal_noise_rate))
         axes[1].set_xlim([0, audio.shape[0]])
+        axes[1].xaxis.set_ticklabels([])
+        axes[1].set_ylabel('Amplitude')
         axes[1].grid()
 
         audio = list(self.roll.as_numpy_iterator())[0][0]
         axes[2].plot(timescale, audio)
-        axes[2].set_title('Roll: ' + str(self.shift_units) + ' Units')
+        axes[2].set_title('Roll: ' + str(self.shift_samples) + ' Samples')
         axes[2].set_xlim([0, audio.shape[0]])
+        axes[2].set_xlabel('Sample')
         axes[2].grid()
 
         plt.show()
 
     def roll_data(self, audio, label):
         """
-        Roll n units in the audio. The units are set by the user.
+        Roll n samples in the audio. The samples are set by the user.
 
         :param audio:
         :param label:
         :return:
         """
-        roll_audio = tf.roll(audio, self.shift_units, 0)
+        roll_audio = tf.roll(audio, self.shift_samples, 0)
         return roll_audio, label
 
     def white_noise(self, audio, label):

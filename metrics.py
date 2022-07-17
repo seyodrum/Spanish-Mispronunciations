@@ -7,7 +7,6 @@ import sklearn.metrics as skm
 from pandas import DataFrame
 import matplotlib.pyplot as plt
 from os import path
-
 from matplotlib.patches import Polygon
 
 
@@ -113,6 +112,46 @@ def plot_boxplots(data, labels, title='boxplot', conf={'logDir': '', 'plotProces
     return fig
 
 
+def plot_train_history(history={}, conf={'logDir': '', 'plotProcess': True}):
+    keys = history.keys()
+
+    if len(keys):
+        fig, axes = plt.subplots(nrows=1, ncols=2, figsize=(12, 6))
+        epochs = len(history['accuracy']) - 1
+
+        #   Accuracy
+        axes[0].plot(history['accuracy'], label='Train')
+
+        if 'val_accuracy' in keys:
+            axes[0].plot(history['val_accuracy'], label='Test')
+
+        axes[0].set_title('Epoch Accuracy')
+        axes[0].set_xlabel('Epoch')
+        axes[0].set_ylabel('Accuracy')
+        axes[0].set_xlim([0, epochs])
+        axes[0].set_ylim([0, 1])
+        axes[0].grid()
+        axes[0].legend()
+
+        #   Loss
+        axes[1].plot(history['loss'], label='Train')
+
+        if 'val_loss' in keys:
+            axes[1].plot(history['val_loss'], label='Test')
+
+        axes[1].set_title('Epoch Loss')
+        axes[1].set_xlabel('Epoch')
+        axes[1].set_ylabel('Loss')
+        axes[1].set_xlim([0, epochs])
+        axes[1].grid()
+        axes[1].legend()
+
+    if conf['plotProcess']:
+        plt.show()
+    fig.savefig(fname=path.join(conf['logDir'], 'train_history.pdf'))
+    return fig
+
+
 #   Test
 if __name__ == '__main__':
     y_t = [1, 2, 3, 1]
@@ -140,4 +179,4 @@ if __name__ == '__main__':
         # tria, tria[bootstrap_indices],
     ]
     plot_boxplots(data, ['0', '1', '2'])
-    print('0')
+    plt.show()
