@@ -75,7 +75,7 @@ class Dataset(object):
         dataset_data_path = tf.data.Dataset.from_tensor_slices(dataframe.x)
         dataset_label1 = tf.data.Dataset.from_tensor_slices(tf.cast(dataframe.y1, tf.int8))
         dataset = tf.data.Dataset.zip((dataset_data_path, dataset_label1))
-        dataset = dataset.map(self.load_audio, num_parallel_calls=tf.data.AUTOTUNE)
+        dataset = dataset.map(load_audio, num_parallel_calls=tf.data.AUTOTUNE)
         return dataset
 
     def get_dataframe(self, conf):
@@ -126,19 +126,6 @@ class Dataset(object):
         file = tf.io.read_file(file_path)
         _, sample_rate = tf.audio.decode_wav(file, 1, 1)
         return sample_rate.numpy()
-
-    def load_audio(self, file_path, label):
-        """
-        Load 16-bits WAV mono-audio.
-
-        :param file_path: File path were the audio is located
-        :param label: Classification label of the audio
-        :return: audio, label
-        """
-        file = tf.io.read_file(file_path)
-        audio, _ = tf.audio.decode_wav(file, 1)
-        audio = self.trim_audio(audio[:, 0])
-        return audio, label
 
     @staticmethod
     def save_dataframe(dataframe, logDir='', name='dataframe'):
@@ -225,9 +212,50 @@ class Dataset(object):
         )
         return dataset_dict
 
-    @staticmethod
-    def trim_audio(audio, min_value=1e-2):
-        min_value = tf.constant([min_value])
-        trim = tf.math.logical_or(tf.math.greater(audio, min_value), tf.math.less(audio, -min_value))
-        trim = tf.where(trim)
-        return audio[trim[0, 0] : trim[-1, 0] + 1]
+
+#   Common Functions
+def audio_as_dataset(filenames=None, audio=[]):
+    if filenames:
+        dataset = tf.data.Dataset.zip(
+            (
+                tf.data.Dataset.from_tensor_slices(list(filenames)),
+                tf.data.Dataset.from_tensor_slices(np.zeros(len(filenames))),
+            )
+        )
+        dataset = dataset.map(load_audio, num_parallel_calls=tf.data.AUTOTUNE)
+    elif len(audio):
+        dataset = tf.data.Dataset.zip(
+            (
+                tf.data.Dataset.from_tensor_slices([np.reshape(audio, (len(audio),))]),
+                tf.data.Dataset.from_tensor_slices(tf.cast(np.zeros(1), tf.float32)),
+            )
+        )
+        dataset = dataset.map(trim_audio, num_parallel_calls=tf.data.AUTOTUNE)
+    return dataset
+
+
+def load_audio(path, label):
+    file = tf.io.read_file(path)
+    audio, _ = tf.audio.decode_wav(file, 1)
+    audio, _ = trim_audio(audio[:, 0], label)
+    return audio, label
+
+
+def load_model(path):
+    model = tf.keras.models.load_model(path)
+    for layer in model.layers:
+        if 'conv' in layer.name or 'cnn' in layer.name:
+            dnn = 'cnn'
+            break
+        elif 'lstm' in layer.name:
+            dnn = 'lstm'
+            break
+    return model, dnn, path
+
+
+def trim_audio(audio, label=None, min_value=1e-2):
+    # min_value = tf.constant([min_value])
+    min_value = tf.convert_to_tensor([min_value])
+    trim = tf.math.logical_or(tf.math.greater(audio, min_value), tf.math.less(audio, -min_value))
+    trim = tf.where(trim)
+    return audio[trim[0, 0] : trim[-1, 0] + 1], label

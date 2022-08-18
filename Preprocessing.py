@@ -43,7 +43,7 @@ class Preprocessing(object):
         if plotProcess:
             audio = list(self.train.as_numpy_iterator())[0][0]
 
-        self.train = self.train.map(self.get_stft, num_parallel_calls=tf.data.AUTOTUNE)
+        self.train = self.train.map(get_stft, num_parallel_calls=tf.data.AUTOTUNE)
 
         if plotProcess:
             spectrogram = list(self.train.as_numpy_iterator())[0][0]
@@ -60,10 +60,10 @@ class Preprocessing(object):
             plt.show()
 
         self.steps_per_epoch = self.train.cardinality().numpy() / self.batch_size
-        self.train = self.train.map(self.expand_data_dimension, num_parallel_calls=tf.data.AUTOTUNE)
+        self.train = self.train.map(expand_data_dimension, num_parallel_calls=tf.data.AUTOTUNE)
 
         if self.type == type['resize']:
-            self.train = self.train.map(self.resize_img, num_parallel_calls=tf.data.AUTOTUNE)
+            self.train = self.train.map(resize_img, num_parallel_calls=tf.data.AUTOTUNE)
 
         if plotProcess:
             spectrogram = list(self.train.as_numpy_iterator())[0][0]
@@ -71,7 +71,7 @@ class Preprocessing(object):
             plt.show()
 
         if dnn == 'lstm':
-            self.train = self.train.map(self.reduce_data_dimension, num_parallel_calls=tf.data.AUTOTUNE)
+            self.train = self.train.map(reduce_data_dimension, num_parallel_calls=tf.data.AUTOTUNE)
 
         self.input_shape = self.get_input_shape()
         self.normalization_layer.adapt(self.train.map(lambda x, _: x))
@@ -82,14 +82,14 @@ class Preprocessing(object):
         if self.type == type['padding']:
             self.test = self.test.map(self.padding_audio, num_parallel_calls=tf.data.AUTOTUNE)
 
-        self.test = self.test.map(self.get_stft, num_parallel_calls=tf.data.AUTOTUNE)
-        self.test = self.test.map(self.expand_data_dimension, num_parallel_calls=tf.data.AUTOTUNE)
+        self.test = self.test.map(get_stft, num_parallel_calls=tf.data.AUTOTUNE)
+        self.test = self.test.map(expand_data_dimension, num_parallel_calls=tf.data.AUTOTUNE)
 
         if self.type == type['resize']:
-            self.test = self.test.map(self.resize_img, num_parallel_calls=tf.data.AUTOTUNE)
+            self.test = self.test.map(resize_img, num_parallel_calls=tf.data.AUTOTUNE)
 
         if dnn == 'lstm':
-            self.test = self.test.map(self.reduce_data_dimension, num_parallel_calls=tf.data.AUTOTUNE)
+            self.test = self.test.map(reduce_data_dimension, num_parallel_calls=tf.data.AUTOTUNE)
 
         self.test = self.test.batch(1)
 
@@ -121,10 +121,10 @@ class Preprocessing(object):
             plt.show()
 
         self.steps_per_epoch = self.train.cardinality().numpy() / self.batch_size
-        self.train = self.train.map(self.expand_data_dimension, num_parallel_calls=tf.data.AUTOTUNE)
+        self.train = self.train.map(expand_data_dimension, num_parallel_calls=tf.data.AUTOTUNE)
 
         if self.type == type['resize']:
-            self.train = self.train.map(self.resize_img, num_parallel_calls=tf.data.AUTOTUNE)
+            self.train = self.train.map(resize_img, num_parallel_calls=tf.data.AUTOTUNE)
 
         if plotProcess:
             spectrogram = list(self.train.as_numpy_iterator())[0][0]
@@ -132,7 +132,7 @@ class Preprocessing(object):
             plt.show()
 
         if dnn == 'lstm':
-            self.train = self.train.map(self.reduce_data_dimension, num_parallel_calls=tf.data.AUTOTUNE)
+            self.train = self.train.map(reduce_data_dimension, num_parallel_calls=tf.data.AUTOTUNE)
 
         self.input_shape = self.get_input_shape()
         self.normalization_layer.adapt(self.train.map(lambda x, _: x))
@@ -144,13 +144,13 @@ class Preprocessing(object):
             self.test = self.test.map(self.padding_audio, num_parallel_calls=tf.data.AUTOTUNE)
 
         self.test = self.test.map(self.get_mfc, num_parallel_calls=tf.data.AUTOTUNE)
-        self.test = self.test.map(self.expand_data_dimension, num_parallel_calls=tf.data.AUTOTUNE)
+        self.test = self.test.map(expand_data_dimension, num_parallel_calls=tf.data.AUTOTUNE)
 
         if self.type == type['resize']:
-            self.test = self.test.map(self.resize_img, num_parallel_calls=tf.data.AUTOTUNE)
+            self.test = self.test.map(resize_img, num_parallel_calls=tf.data.AUTOTUNE)
 
         if dnn == 'lstm':
-            self.test = self.test.map(self.reduce_data_dimension, num_parallel_calls=tf.data.AUTOTUNE)
+            self.test = self.test.map(reduce_data_dimension, num_parallel_calls=tf.data.AUTOTUNE)
 
         self.test = self.test.batch(1)
 
@@ -182,10 +182,10 @@ class Preprocessing(object):
             plt.show()
 
         self.steps_per_epoch = self.train.cardinality().numpy() / self.batch_size
-        self.train = self.train.map(self.expand_data_dimension, num_parallel_calls=tf.data.AUTOTUNE)
+        self.train = self.train.map(expand_data_dimension, num_parallel_calls=tf.data.AUTOTUNE)
 
         if self.type == type['resize']:
-            self.train = self.train.map(self.resize_img, num_parallel_calls=tf.data.AUTOTUNE)
+            self.train = self.train.map(resize_img, num_parallel_calls=tf.data.AUTOTUNE)
 
         if plotProcess:
             spectrogram = list(self.train.as_numpy_iterator())[0][0]
@@ -193,7 +193,7 @@ class Preprocessing(object):
             plt.show()
 
         if dnn == 'lstm':
-            self.train = self.train.map(self.reduce_data_dimension, num_parallel_calls=tf.data.AUTOTUNE)
+            self.train = self.train.map(reduce_data_dimension, num_parallel_calls=tf.data.AUTOTUNE)
 
         self.input_shape = self.get_input_shape()
         self.normalization_layer.adapt(self.train.map(lambda x, _: x))
@@ -205,13 +205,13 @@ class Preprocessing(object):
             self.test = self.test.map(self.padding_audio, num_parallel_calls=tf.data.AUTOTUNE)
 
         self.test = self.test.map(self.get_mfccs, num_parallel_calls=tf.data.AUTOTUNE)
-        self.test = self.test.map(self.expand_data_dimension, num_parallel_calls=tf.data.AUTOTUNE)
+        self.test = self.test.map(expand_data_dimension, num_parallel_calls=tf.data.AUTOTUNE)
 
         if self.type == type['resize']:
-            self.test = self.test.map(self.resize_img, num_parallel_calls=tf.data.AUTOTUNE)
+            self.test = self.test.map(resize_img, num_parallel_calls=tf.data.AUTOTUNE)
 
         if dnn == 'lstm':
-            self.test = self.test.map(self.reduce_data_dimension, num_parallel_calls=tf.data.AUTOTUNE)
+            self.test = self.test.map(reduce_data_dimension, num_parallel_calls=tf.data.AUTOTUNE)
 
         self.test = self.test.batch(1)
 
@@ -219,19 +219,6 @@ class Preprocessing(object):
         self.set_data_pipeline()
 
     # Secondary functions
-    @staticmethod
-    def expand_data_dimension(data, label):
-        """
-        Insert a dimension of length 1 at the end of the tensor.
-        Allow Conv2d layers to interpret data as 1-D image
-
-        :param data: Data to be expanded
-        :param label: Classification label
-        :return: data_expanded, label
-        """
-        data_expanded = tf.expand_dims(data, -1)
-        return data_expanded, label
-
     def get_dataset_max_samples(self):
         """
         Get max length of samples in dataset
@@ -305,20 +292,6 @@ class Preprocessing(object):
 
         return mfccs, label
 
-    @staticmethod
-    def get_stft(audio, label):
-        """
-        Get Spectrogram representation of the audio
-
-        :param audio: Audio to be represented as a spectrogram
-        :param label: Classification label of the audio
-        :return: spectrogram, label
-        """
-        spectrogram = tf.signal.stft(audio, frame_length=513, frame_step=256, fft_length=512, name='STFT')  # 255 603
-        spectrogram = tf.abs(spectrogram)
-        spectrogram = tf.math.log(spectrogram + tf.keras.backend.epsilon())
-        return spectrogram, label
-
     def padding_audio(self, audio, label):
         """
         Concatenate audio with padding so that all audio clips will be of the same length
@@ -348,17 +321,6 @@ class Preprocessing(object):
         ax.set_xlabel('Sample')
         ax.set_ylabel('Coefficient')
 
-    @staticmethod
-    def reduce_data_dimension(data, label):
-        """ """
-        data_reduced = tf.squeeze(data)
-        return data_reduced, label
-
-    @staticmethod
-    def resize_img(image, label):
-        resize = tf.image.resize(image, [256, 256])
-        return resize, label
-
     def set_data_pipeline(self):
         """
         Build the input pipeline of the train dataset
@@ -367,3 +329,36 @@ class Preprocessing(object):
         """
         self.train = self.train.cache().prefetch(tf.data.AUTOTUNE).repeat()
         self.test = self.test.cache().prefetch(tf.data.AUTOTUNE)
+
+
+#   Common Functions
+def audio_as_dataset(dataset, dnn):
+    dataset = dataset.map(get_stft, num_parallel_calls=tf.data.AUTOTUNE)
+    dataset = dataset.map(expand_data_dimension, num_parallel_calls=tf.data.AUTOTUNE)
+    dataset = dataset.map(resize_img, num_parallel_calls=tf.data.AUTOTUNE)
+    if dnn == 'lstm':
+        dataset = dataset.map(reduce_data_dimension, num_parallel_calls=tf.data.AUTOTUNE)
+    dataset = dataset.batch(1)
+    return dataset
+
+
+def expand_data_dimension(data, label):
+    data_expanded = tf.expand_dims(data, -1)
+    return data_expanded, label
+
+
+def get_stft(audio, label):
+    spectrogram = tf.signal.stft(audio, frame_length=513, frame_step=256, fft_length=512, name='STFT')  # 255 603
+    spectrogram = tf.abs(spectrogram)
+    spectrogram = tf.math.log(spectrogram + tf.keras.backend.epsilon())
+    return spectrogram, label
+
+
+def reduce_data_dimension(data, label):
+    data_reduced = tf.squeeze(data)
+    return data_reduced, label
+
+
+def resize_img(image, label):
+    resize = tf.image.resize(image, [256, 256])
+    return resize, label
