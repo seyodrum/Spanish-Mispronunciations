@@ -17,7 +17,7 @@ labels = {
     2: 'Bien pronunciada',
 }
 model_path = {
-    'cnn': 'C:/Users/sergi/OneDrive/Documentos/Dev/Spanish-Mispronunciations/tensorboard/1_tags3_cnn_stft/model',
+    'cnn': 'C:/Users/sergi/OneDrive/Documentos/Dev/Spanish-Mispronunciations/tensorboard/4_cnn/model',
     'lstm': 'C:/Users/sergi/OneDrive/Documentos/Dev/Spanish-Mispronunciations/tensorboard/1_tags3_lstm_stft/model',
     'custom': '',
 }
@@ -29,7 +29,7 @@ tf_response = {'data': {}, 'msg': ''}
 class App(ttk.Frame):
     def __init__(self, root):
         super().__init__(root)
-        root.title('Identificaciôn de errores frecuentes en el idioma español')
+        root.title('Identificación de errores frecuentes en el idioma español')
 
         #   Model
         self.model, self.dnn, self.model_path = Dataset.load_model(model_path['cnn'])
